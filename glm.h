@@ -1,16 +1,16 @@
 #ifndef GLM_H
 #define GLM_H
-/*    
+/*
       glm.h
       Nate Robins, 1997, 2000
       nate@pobox.com, http://www.pobox.com/~nate
- 
+
       Wavefront OBJ model file format reader/writer/manipulator.
 
       Includes routines for generating smooth normals with
       preservation of edges, welding redundant vertices & texture
       coordinate generation (spheremap and planar projections) + more.
-	  
+
 	  changes by F. Devernay:
       - warning/error functions in glm_util.c
       - added glmStrStrip function to handle filenames with spaces
@@ -22,7 +22,7 @@
       TODO:
       - allow CR, CRLF, or LF as end-of-line in input obj and mtl
       - glmVertexNormals(): have an option to add normals only where undefined
-	  
+
 	  Modification texture Loader after F. Davernay enchanment
 	  by Ngurah Ady Kusuma, 2013-2014 :
 	  - Set DevIL always be default texture loader and clear other texture Loader
@@ -56,7 +56,7 @@
 #define GLM_MATERIAL (1 << 4)       /* render with materials */
 #define GLM_2_SIDED  (1 << 5)       /* render two-sided polygons */
 
-/* GLMmaterial: Structure that defines a material in a model. 
+/* GLMmaterial: Structure that defines a material in a model.
  */
 typedef struct _GLMmaterial
 {
@@ -82,7 +82,7 @@ typedef struct _GLMmaterial
       width;
   unsigned char* image;
   char *t_filename;
-  GLuint t_id[1];	
+  GLuint t_id[1];
 #endif
 } GLMmaterial;
 
@@ -162,7 +162,7 @@ extern "C" {
  * scaling it to fit in a unit cube around the origin.  Returns the
  * scalefactor used.
  *
- * model - properly initialized GLMmodel structure 
+ * model - properly initialized GLMmodel structure
  */
 GLfloat
 glmUnitize(GLMmodel* model);
@@ -177,7 +177,7 @@ GLvoid
 glmDimensions(GLMmodel* model, GLfloat* dimensions);
 
 /* glmScale: Scales a model by a given amount.
- * 
+ *
  * model - properly initialized GLMmodel structure
  * scale - scalefactor (0.5 = half as large, 2.0 = twice as large)
  */
@@ -187,8 +187,8 @@ glmScale(GLMmodel* model, GLfloat scale);
 /* glmReverseWinding: Reverse the polygon winding for all polygons in
  * this model.  Default winding is counter-clockwise.  Also changes
  * the direction of the normals.
- * 
- * model - properly initialized GLMmodel structure 
+ *
+ * model - properly initialized GLMmodel structure
  */
 GLvoid
 glmReverseWinding(GLMmodel* model);
@@ -256,10 +256,10 @@ glmDelete(GLMmodel* model);
  * Returns a pointer to the created object which should be free'd with
  * glmDelete().
  *
- * filename - name of the file containing the Wavefront .OBJ format data.  
+ * filename - name of the file containing the Wavefront .OBJ format data.
  */
-GLMmodel* 
-glmReadOBJ(const char* filename);
+GLMmodel*
+glmReadOBJ(const char* filename, int num);
 
 /* glmWriteOBJ: Writes a model description in Wavefront .OBJ format to
  * a file.
@@ -299,7 +299,7 @@ glmDraw(GLMmodel* model, GLuint mode);
  *            GLM_FLAT    -  render with facet normals
  *            GLM_SMOOTH  -  render with vertex normals
  *            GLM_TEXTURE -  render with texture coords
- *            GLM_FLAT and GLM_SMOOTH should not both be specified.  
+ *            GLM_FLAT and GLM_SMOOTH should not both be specified.
  */
 GLuint
 glmList(GLMmodel* model, GLuint mode);
