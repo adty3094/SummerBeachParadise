@@ -46,6 +46,10 @@
 
 #define T(x) (model->triangles[(x)])
 
+int angka = 0;
+char wow[1000];
+char wiw[1000];
+char mtrl[1000];
 
 /* _GLMnode: general purpose node */
 typedef struct _GLMnode {
@@ -302,12 +306,43 @@ glmReadMTL(GLMmodel* model, char* name)
     char* tex_filename;
     char* t_filename;
     char    buf[128];
+    int panjang;
     GLuint nummaterials, i;
 
     dir = __glmDirName(model->pathname);
     filename = (char*)malloc(sizeof(char) * (strlen(dir) + strlen(name) + 1));
+    //strcpy(wiw,name);
+    //wiw[]={};
+    memset(wiw,0,sizeof(wiw));
+    //printf("%s wew ",name);
+    panjang = strlen(name);
+    //printf("%s aaa ",wiw);
+    strncpy(wiw,name,panjang-4);
+    //printf("%s wqw ",wiw);
+    strcat(wiw,"1.mtl");
+    //printf("%s wiw ",wiw);
     strcpy(filename, dir);
     strcat(filename, name);
+    //printf("%d num",num);
+    //printf("%s ok ",filename);
+    if(angka == 1){
+        panjang = strlen(filename);
+        strncpy(wow, filename,panjang-4);
+        strcpy(filename,wow);
+        strcat(filename,"1.mtl");
+    }
+    if(angka == 2){
+        panjang = strlen(filename);
+        strncpy(wow, filename,panjang-4);
+        strcpy(filename,wow);
+        strcat(filename,".mtl");
+    }
+    //strcpy(wow,name);
+    //printf("%s wow\n",wow);
+    //strcpy(nama, filename);
+    //printf("%s nama\n",nama);
+    //printf("%d panjang \n",panjang);
+    //printf("%s sip ",filename);
 
     file = fopen(filename, "r");
     if (!file) {
@@ -324,9 +359,19 @@ glmReadMTL(GLMmodel* model, char* name)
             fgets(buf, sizeof(buf), file);
             break;
         case 'n':               /* newmtl */
+            //printf("%s ini ",buf);
 	    if(strncmp(buf, "newmtl", 6) != 0)
+            //printf("%s itu ",buf);
 		__glmFatalError("glmReadMTL: Got \"%s\" instead of \"newmtl\" in file \"%s\"", buf, filename);
             fgets(buf, sizeof(buf), file);
+            //printf("%s itu ",buf);
+            int ck;
+            memset(mtrl,0,sizeof(mtrl));
+            for(ck = 0; ck < strlen(buf)-2; ck++){
+                mtrl[ck]=buf[ck+1];
+            }
+            //strcpy(mtrl,buf);
+            //printf("%s dan %d panjang mtrl ",mtrl,strlen(mtrl));
             nummaterials++;
             sscanf(buf, "%s %s", buf, buf);
             break;
@@ -731,10 +776,12 @@ glmSecondPass(GLMmodel* model, FILE* file)
     numtriangles = 0;
     material = 0;
     while(fscanf(file, "%s", buf) != EOF) {
+            //printf("%s buf1",buf);
         switch(buf[0]) {
         case '#':               /* comment */
             /* eat up rest of line */
             fgets(buf, sizeof(buf), file);
+            //printf("%s buf1",buf);
             break;
         case 'v':               /* v, vn, vt */
             switch(buf[1]) {
@@ -761,8 +808,14 @@ glmSecondPass(GLMmodel* model, FILE* file)
             }
             break;
             case 'u':
+                //printf("%s buf3 ",buf);
                 fgets(buf, sizeof(buf), file);
+                //printf("%s buf2",buf);
                 sscanf(buf, "%s %s", buf, buf);
+                //printf("%s buf",buf);
+                if(angka>=1) strcpy(buf,mtrl);
+                //printf("%s bufff %d panjangnya ",buf,strlen(buf));
+
                 material = glmFindMaterial(model, buf);
 #ifdef MATERIAL_BY_FACE
                 if(!group->material && group->numtriangles)
@@ -774,6 +827,7 @@ glmSecondPass(GLMmodel* model, FILE* file)
             case 'g':               /* group */
                 /* eat up rest of line */
                 fgets(buf, sizeof(buf), file);
+                //printf("%s 123 ",buf);
 #if SINGLE_STRING_GROUP_NAMES
                 sscanf(buf, "%s", buf);
 #else
@@ -925,7 +979,11 @@ glmSecondPass(GLMmodel* model, FILE* file)
 
             default:
                 /* eat up rest of line */
+                //printf("%s buf prety ",buf);
+                //if(angka == 1) strcpy(buf,wow);
                 fgets(buf, sizeof(buf), file);
+                if(angka >= 1) strcpy(buf,wiw);
+                //printf("%s buf asda",buf);
                 break;
     }
   }
@@ -1544,11 +1602,13 @@ glmDelete(GLMmodel* model)
  * filename - name of the file containing the Wavefront .OBJ format data.
  */
 GLMmodel*
-glmReadOBJ(const char* filename)
+glmReadOBJ(const char* filename,int num)
 {
     GLMmodel* model;
     FILE*   file;
     int i, j;
+    angka = num;
+    //printf("%d num ",num);
 
     /* open the file */
     file = fopen(filename, "r");
